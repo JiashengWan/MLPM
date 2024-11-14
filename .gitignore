@@ -25,3 +25,5 @@ build/
 dataset/
 
 Add .gitignore file
+
+data_exploration_jiasheng.*
