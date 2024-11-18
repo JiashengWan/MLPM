@@ -23,6 +23,7 @@ build/
 
 # Dataset
 dataset/
+preprocessed_dataset/
 
 Add .gitignore file
 
