@@ -84,9 +84,11 @@ def setup_training_data(selected_sensor_groups, params, control_df, sensor_group
     return train_loader, val_loader, params
 
 def evaluate_model(params, control_df, sensor_groups):
-    """Evaluate model with multiple runs"""
+    """Evaluate model with multiple runs and storage management"""
     n_runs = 3
     df_all_val = pd.DataFrame()
+    best_val_loss = float('inf')
+    best_model_path = None
 
     for i in range(n_runs):
         seed = SEED + i
@@ -108,22 +110,33 @@ def evaluate_model(params, control_df, sensor_groups):
             weight_decay=updated_params['weight_decay']
         )
 
-        # Train
+        # Train with storage management
         trainer = Trainer(
             model=model,
             optimizer=optimizer,
             criterion=nn.MSELoss(),
             n_epochs=updated_params['max_epochs'],
             device=device,
-            seed=seed
+            seed=seed,
+            model_name=f'trial_{study.trials[-1].number}_run_{i}'  # Unique name for each run
         )
         trainer.fit(train_loader, val_loader)
 
         # Collect validation loss
         val_rmse = trainer.losses['eval'][-1]
+        
+        # Only keep the best model across runs
+        if val_rmse < best_val_loss:
+            if best_model_path and os.path.exists(best_model_path):
+                os.remove(best_model_path)  # Remove previous best
+            best_val_loss = val_rmse
+            best_model_path = trainer.model_path
+        else:
+            if trainer.model_path and os.path.exists(trainer.model_path):
+                os.remove(trainer.model_path)  # Remove worse model
+                
         df_all_val = pd.concat([df_all_val, pd.DataFrame({'rmse': [val_rmse]})], ignore_index=True)
 
-    # Return average RMSE
     return df_all_val['rmse'].mean()
 
 def objective(trial):
@@ -166,15 +179,23 @@ if __name__ == "__main__":
     
     # Create directories for results
     os.makedirs('optuna_results', exist_ok=True)
+    os.makedirs('models', exist_ok=True)
 
-    # Delete existing database if it exists
-    study_name = f'cnn_hyperopt_{datetime.now().strftime("%Y%m%d_%H%M%S")}'
-    print(f"Creating new study: {study_name}")
+    # Create unique study name with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    study_name = f'cnn_hyperopt_{timestamp}'
     
+    # Clean up old files before starting
+    print("\nCleaning up old files...")
+    for f in os.listdir('models'):
+        if f.endswith('.pt'):
+            os.remove(os.path.join('models', f))
+    
+    print(f"\nCreating new study: {study_name}")
     # Create study with pruning
     study = optuna.create_study(
-        storage=f'sqlite:///optuna_results/study.db',
-        study_name='cnn_hyperopt',
+        storage=f'sqlite:///optuna_results/study_{timestamp}.db',
+        study_name=study_name,
         direction="minimize",
         pruner=optuna.pruners.MedianPruner(),
         load_if_exists=False
@@ -184,7 +205,7 @@ if __name__ == "__main__":
     # Run optimization
     study.optimize(
         objective, 
-        n_trials=15,
+        n_trials=10,  # Reduced to 5 trials
         timeout=3600*24  # 24 hour timeout
     )
     
@@ -196,6 +217,8 @@ if __name__ == "__main__":
     for key, value in trial.params.items():
         print(f"    {key}: {value}")
         
-    # Save study statistics
+    # Save study statistics with timestamp
+    results_file = f'optuna_results/study_results_{timestamp}.csv'
     df_results = study.trials_dataframe()
-    df_results.to_csv('optuna_results/study_results.csv')
+    df_results.to_csv(results_file)
+    print(f"\nResults saved to: {results_file}")

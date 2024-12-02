@@ -27,16 +27,16 @@ Operating_modes_name = [
 
 DEFAULT_PARAMS_TOP = {
     'window': 50,
-    'n_ch': 64,
-    'n_k': 7,
-    'n_hidden': 128,
-    'n_layers': 4,
-    'dropout': 0.2,
+    'n_ch': 34,
+    'n_k': 9,
+    'n_hidden': 268,
+    'n_layers': 3,
+    'dropout': 0.007,
     'padding': 'same',
-    'use_batchnorm': True,
+    'use_batchnorm': False,
     'batch_size': 256,
-    'base_lr': 5e-4,
-    'weight_decay': 1e-5,
+    'base_lr': 2.61e-5,
+    'weight_decay': 8.39e-5,
     'max_epochs': 50,
     'activation': 'relu',
     'leaky_relu_slope': 0.01 
@@ -774,9 +774,13 @@ def main():
     torch.save(checkpoint, 'models/model_checkpoint.pth')
 
     # Save the training loss plot
+    plt.figure(figsize=(10, 6))
     plot_training_losses(trainer)
-    plt.savefig('models/training_loss.pdf', format='pdf')
-    plt.close()
+    plt.savefig('models/training_loss.pdf', 
+            format='pdf',
+            dpi=300,
+            bbox_inches='tight')
+    plt.close('all')
 
 if __name__ == "__main__":
     main()
