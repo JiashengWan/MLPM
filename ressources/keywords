@@ -1,0 +1,12 @@
+Unsupervised Machine Learning :
+
+	- Clustering
+	- Neural Networks
+	- Linear regression
+	- Isolation forest (IForest) (Liu et al., 2008)
+	- One-class support vector machine (OCSVM) (Schölkopf et al.,1999)
+	- Local outlier factor (LOF) (Breunig et al., 2000)
+	- Angle-based outlier detection (ABOD) (Kriegel et al., 2008)
+	- kth-nearest neighbour (KNN) (Ramaswamy et al., 2000)
+	- Histogram-based outlier score (HBOS) (Goldstein and Dengel,2012)
+	- Minimum covariance discriminant (MCD) (R
