@@ -159,20 +159,17 @@ class CAETrainer:
         reconstruction_errors = []
         
         with tqdm(val_loader, desc='Validating', leave=False) as pbar:
-            for x, _ in pbar:
+            for x in pbar:
                 batch_size = x.shape[0]
                 total_samples += batch_size
                 x = x.to(self.device)
                 
-                n_control = x.shape[1] - _.shape[1]
-                sensor_part = x[:, n_control:, :]
-                
                 output = self.model(x)
-                loss = self.criterion(output, sensor_part)
+                loss = self.criterion(output, x)
                 
                 total_loss += loss.item() * batch_size  # Multiply by batch size
                 
-                errors = torch.mean((output - sensor_part) ** 2, dim=(1, 2))
+                errors = torch.mean((output - x) ** 2, dim=(1, 2))
                 reconstruction_errors.extend(errors.cpu().numpy())
                 
                 pbar.set_postfix({'val_loss': f'{loss.item():.6f}'})
@@ -346,7 +343,7 @@ def main(unit="VG5",mode='turbine'):
         lr=DEFAULT_PARAMS['learning_rate']
     )
 
-    trainer = CAETrainer(model, optimizer, device=device, model_name='cae_model_{unit}_{mode}')
+    trainer = CAETrainer(model, optimizer, device=device, model_name=f'cae_model_{unit}_{mode}')
 
     print("\n=== Starting Training ===")
     reconstruction_errors = trainer.train(

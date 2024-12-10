@@ -1,0 +1,73 @@
+Python: /home/wan/miniconda3/envs/opp/bin/python
+Conda env: opp
+Using device: cuda
+
+=== Loading Training dataframe ===
+
+=== Creating Initial Dataset for Split ===
+
+=== Splitting data ===
+
+Diagnostic Information:
+Total dataset size: 332185
+Train set size: 265748
+Validation set size: 66437
+
+=== Checking Model Input Data ===
+Sample batch shape: torch.Size([256, 84, 50])
+Sample batch range: [0.000000, 1.000000]
+
+=== Initializing Model ===
+
+=== Starting Training ===
+Training CAE for 100 epochs...
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+New best model saved!
+
+Final reconstruction statistics:
+Mean: 0.000062
+Std: 0.000050
+
+=== Saving Models and Statistics ===
+
+All files saved in 'models' directory
