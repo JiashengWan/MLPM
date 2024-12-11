@@ -25,6 +25,8 @@ build/
 dataset/
 preprocessed_dataset/
 SERVERFILES_CAE/data/
+SERVERFILES_CAE/reconstructed/
+images/
 
 Add .gitignore file
 

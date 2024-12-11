@@ -6,7 +6,8 @@ import joblib
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from traincae import DEFAULT_PARAMS, CAE, SlidingWindowDataset
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 operating_conditions_set_turbine = {
     "dyn_only_on": False, "turbine_mode": True, "equilibrium_turbine_mode": True, "short_circuit_mode": False
@@ -156,3 +157,26 @@ def get_indexes_fault(faulty_df, column):
         i+=1
     return ind
 
+def correlation_faulty_signals(faulty_df, filtered_columns, save_path=None):
+
+    corr_map = faulty_df[filtered_columns].corr()
+
+    f, ax = plt.subplots(1, 1, figsize=(8, 6))
+    sns.heatmap(corr_map, 
+                cmap="vlag")
+    plt.title("Heatmap of the correlation of the faulty signals")
+
+    if save_path:
+        plt.savefig(save_path)
+
+    return corr_map
+
+def find_unique_correlations(dataframe, threshold):
+    df = dataframe[dataframe>threshold]
+    unique_correlations = set()
+    for col in dataframe.columns:
+        for idx in dataframe.index:
+            if col != idx and not np.isnan(df.at[idx, col]):
+                unique_correlations.add(idx)
+                unique_correlations.add(col)
+    return list(unique_correlations)
