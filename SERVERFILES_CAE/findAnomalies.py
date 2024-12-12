@@ -161,7 +161,7 @@ def correlation_faulty_signals(faulty_df, filtered_columns, save_path=None):
 
     corr_map = faulty_df[filtered_columns].corr()
 
-    f, ax = plt.subplots(1, 1, figsize=(8, 6))
+    f, ax = plt.subplots(1, 1, figsize=(8, 6)) # 8,6 - 16,14
     sns.heatmap(corr_map, 
                 cmap="vlag")
     plt.title("Heatmap of the correlation of the faulty signals")
